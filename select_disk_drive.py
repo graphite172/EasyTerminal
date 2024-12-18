@@ -2,8 +2,8 @@ import subprocess
 import psutil
 import os
 import tkinter
-from tkinter import ttk, messagebox
 
+from tkinter import ttk, messagebox
 
 
 #############################################################################################
@@ -13,7 +13,6 @@ from tkinter import ttk, messagebox
 #                                                                                           #
 #                                                                                           #
 #############################################################################################
-
 
 # 사용 가능한 파티션 확인
 def get_available_partitions():
