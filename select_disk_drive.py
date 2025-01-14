@@ -1,10 +1,9 @@
+import sys
 import subprocess
 import psutil
 import os
-import tkinter
-
-from tkinter import ttk, messagebox
-
+import psutil
+from PyQt5.QtWidgets import QApplication, QMainWindow, QListWidget, QPushButton, QVBoxLayout, QLabel, QWidget, QMessageBox 
 
 #############################################################################################
 #                                                                                           #
@@ -19,13 +18,11 @@ def get_available_partitions():
     drives = []
     partitions = psutil.disk_partitions()
 
-    ## print(f"실제 파티션 목록:{partitions}")
-    
     for partition in partitions:
         if os.path.exists(partition.mountpoint):
             drive_letter = partition.device.strip("\\")
             drives.append(drive_letter[0])
-    ## print(f"실제 파티션 목록:{drives}")
+
     return drives
 
 
@@ -39,99 +36,115 @@ def open_terminal_partition(drive_paths):
             print(f"{drive_paths}를 찾을 수 없습니다.")
             return 
         
-        command = f'start wt -p "Git Bash" --title "현재 위치: {drive_paths}" -d "{drive_paths}'
-
+        command = f'start wt -p "Git Bash" --title "현재 위치: {drive_paths}" -d "{drive_paths}"'
         subprocess.run(command, shell=True, check=True)
-        #print(f"파워쉘 스크립트 실행성공, 선택된 파티션 {drive_letter}: 드라이브")
-        
-        # messagebox.showinfo("성공", f"{drive_letter} 드라이브")
-    except subprocess.CalledProcessError as e: 
-        #print(f"파워쉘 스크립트 실행 실패: {e}")
 
-        messagebox.showerror("오류", f"드라이브 불러오기 실패: {e}")
+    except subprocess.CalledProcessError as e: 
+        QMessageBox.critical(None, "오류", f"드라이브 불러오기 실패: {e}")
+    except FileNotFoundError as e:
+        QMessageBox.critical(None, "오류", str(e))
+
+
+
+
+
+
+# PyQt Init
+#
+class EasyTerminal(QMainWindow):
+    def __init__(self):
+        super().__init__()
+        self.initUI()
+
+    def initUI(self):
+        app_widget = QWidget()
+        self.setGeometry(600, 150, 500, 450)
+        self.setWindowTitle('EasyTerminal')
+     
+        self.label = QLabel("사용 가능한 드라이브 목록")
+
+        # 레이아웃 설정
+        layout = QVBoxLayout(app_widget)
+        layout.addWidget(self.label)
+        
+        self.select_btn = QPushButton("선택")
+        self.select_btn.clicked.connect(self.on_selected_drive)
+        layout.addWidget(self.select_btn)
+
+        self.exit_btn = QPushButton("종료")
+        self.exit_btn.clicked.connect(self.close)
+        layout.addWidget(self.exit_btn)
+
+        self.setCentralWidget(app_widget)
+
+        self.print_drive_lists()       
+                
+        self.show()
+
+    def print_drive_lists(self):
+        drives = get_available_partitions()
+        self.drive_list = QListWidget()
+        
+        if not drives:
+            QMessageBox.critical(self, "오류", "사용 가능한 드라이브가 존재하지 않습니다. 시스템을 점검하세요.")
+            sys.exit()
+
+        for drive in drives:
+            self.drive_list.addItem(f"{drive} 드라이브")
+
+        layout = self.centralWidget().layout()
+        layout.addWidget(self.drive_list)
+
+    def on_selected_drive(self):
+        sel_item = self.drive_list.currentItem()
+
+        if sel_item:
+            drive_letter = sel_item.text().replace(" 드라이브", "")
+            drive_path = fr"{drive_letter}:\\"
+            open_terminal_partition(drive_path)
+        else:
+            QMessageBox.warning(self, "경고", "드라이브를 선택하세요")  
+
+    
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    window = EasyTerminal()
+    sys.exit(app.exec_())
+
+
+
+
+# Legecy Code
+#
+#
+#
+#
+#
+#
 
 
 # 드라이브 선택
-def display_drive_menu():
+# def display_drive_menu():
 
-    drive_letter = get_available_partitions()
+#     drive_letter = get_available_partitions()
 
-    if not drive_letter:
-        #print("파티션이 존재하지 않습니다.")
-        messagebox.showinfo
-        return None
+#     if not drive_letter:
+#         #print("파티션이 존재하지 않습니다.")
+     
+#         return None
 
-    print("파티션을 선택하세요:")
-    for i, partition in enumerate(drive_letter, start=1):
-        print(f"[{i}] - {partition} 드라이브")
+#     print("파티션을 선택하세요:")
+#     for i, partition in enumerate(drive_letter, start=1):
+#         print(f"[{i}] - {partition} 드라이브")
 
-    while True:
-        try:
-            choice = int(input("숫자를 입력하여 드라이브를 선택하세요: "))
+#     while True:
+#         try:
+#             choice = int(input("숫자를 입력하여 드라이브를 선택하세요: "))
 
-            if 1 <= choice <= len(drive_letter):
-                return drive_letter[choice - 1]
-            else:
-                print("존재하지 않는 파티션입니다. 다시 선택해주세요.")
+#             if 1 <= choice <= len(drive_letter):
+#                 return drive_letter[choice - 1]
+#             else:
+#                 print("존재하지 않는 파티션입니다. 다시 선택해주세요.")
         
-        except ValueError:
-            print("숫자로 입력하세요.")
-
-# gui 실행기
-def create_drive_selector():
-    def on_select_drive():
-        selected_idx = drive_list.curselection()
-        if selected_idx:
-            selected_drive = drive_list.get(selected_idx)
-            drive_letter = selected_drive.replace(" 드라이브", "")
-            drive_path = f"{drive_letter}:\\\\"
-
-            print(f"{drive_path}")
-            #messagebox.showinfo("정상", f"현재 선택된 드라이브 {selected_drive}") 
-            open_terminal_partition(drive_path)
-        else:
-            messagebox.showerror("경고", "드라이브를 선택하세요.")
-
-    # GUI 실행기 인스턴스 생성
-    win = tkinter.Tk()
-
-    win.title("파티션 선택")
-    win.geometry("400x170+700+100")
-    win.resizable(False, False)
-
-    # 레이블 생성 및 화면 배치
-    drive_label = tkinter.Label(win, text="사용 가능한 드라이브 목록", font=("Arial",15))
-
-    drives = get_available_partitions()
-    
-    # 드라이브 개수 만큼 박스 크기 설정
-    listbox_height = len(drives)
-
-    drive_list = tkinter.Listbox(win, relief="flat", selectmode="single", font=("Arial",12), activestyle="none", height=listbox_height)
-
-    for drive in drives:
-        drive_list.insert(tkinter.END, f"{drive} 드라이브")
-       
-
-    select_btn = ttk.Button(win, text="선택", width=15, takefocus=True, command=on_select_drive)
-    exit_btn = ttk.Button(win, text="종료", width=15, takefocus=True, command=win.destroy)
-
-    # 컴포넌트 배치
-    drive_label.grid(row=0, column=0, columnspan=2, rowspan=1, pady=10, padx=10, sticky="w") 
-    drive_list.grid(row=1, column=0, columnspan=1, rowspan=2, pady=10, padx=10, sticky="n")  
-    select_btn.grid(row=1, column=2, padx=10, pady=1, sticky="e")  # 오른쪽에 선택 버튼 배치
-    exit_btn.grid(row=2, column=2, padx=10, pady=1, sticky="e")  # 오른쪽에 종료 버튼 배치
-
-    
-    # 메인화면 표시
-    win.mainloop()
-
-
-# def select_terminal_profile()
-
-if __name__ == "__main__":
-    create_drive_selector()
-   # selected_drive = display_drive_menu()
-   # print(f"선택된 드라이브{selected_drive}")
-   # if selected_drive:
-   #    open_terminal_partition(selected_drive)
+#         except ValueError:
+#             print("숫자로 입력하세요.")
