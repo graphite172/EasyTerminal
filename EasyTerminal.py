@@ -30,7 +30,6 @@ def get_available_partitions():
 
     return drives
 
-
 # Windows Terminal Git bash 실행
 # 터미널로 실행할때 사용
 def open_terminal(path):
@@ -54,7 +53,8 @@ def open_terminal(path):
         QMessageBox.critical(None, "오류", str(e))
 
 
-#권장 설치파일
+# 설치된 버전 확인 
+# winget 명령어로 설치된 버전 확인
 
 def get_version_from_winget(cmd:list[str], package_id) -> Optional[str]:
     try:
@@ -85,15 +85,18 @@ def get_version_from_winget(cmd:list[str], package_id) -> Optional[str]:
         print(f"[ERROR] 예외 발생: {str(e)}")
     return None
 
+# 설치된 버전 확인
 def get_installed_version(package_id:str) -> str | None:
     """설치된 버전 확인"""
     return get_version_from_winget(["winget", "list", "--id", package_id, "-e"],package_id)
 
+# 설치된 버전 확인
 def get_avalible_version(package_id:str) -> str | None:
     """설치된 버전 확인"""
     return get_version_from_winget(["winget", "search", "--id", package_id, "-e"],package_id)
 
-
+# 버전 비교
+# 현재 버전과 최신 버전 비교    
 def compare_version_check(v1: str, v2: str) -> bool:
     """현재 버전 확인"""
     try:
