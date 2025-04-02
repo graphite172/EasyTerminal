@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>440</width>
-    <height>294</height>
+    <width>446</width>
+    <height>299</height>
    </rect>
   </property>
   <property name="mouseTracking">
@@ -32,8 +32,8 @@
     <widget class="QPushButton" name="btn_tmopen">
      <property name="geometry">
       <rect>
-       <x>110</x>
-       <y>224</y>
+       <x>106</x>
+       <y>220</y>
        <width>81</width>
        <height>30</height>
       </rect>
@@ -48,8 +48,21 @@
        <x>10</x>
        <y>20</y>
        <width>181</width>
-       <height>201</height>
+       <height>191</height>
       </rect>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btn_find_path">
+     <property name="geometry">
+      <rect>
+       <x>18</x>
+       <y>220</y>
+       <width>81</width>
+       <height>30</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>경로 찾기</string>
      </property>
     </widget>
    </widget>
@@ -75,33 +88,46 @@
       </rect>
      </property>
      <property name="text">
-      <string>Windows Terminal 설치하기</string>
+      <string>Windows Terminal 설치/업데</string>
      </property>
     </widget>
     <widget class="QPushButton" name="btn_installgitbash">
      <property name="geometry">
       <rect>
-       <x>8</x>
+       <x>9</x>
        <y>60</y>
        <width>181</width>
        <height>41</height>
       </rect>
      </property>
      <property name="text">
-      <string>Git Bash 설치하기</string>
+      <string>Git Bash 설치/업데이트</string>
      </property>
     </widget>
     <widget class="QPushButton" name="btn_installpowershell">
      <property name="geometry">
       <rect>
-       <x>8</x>
+       <x>10</x>
        <y>100</y>
        <width>181</width>
        <height>41</height>
       </rect>
      </property>
      <property name="text">
-      <string>Powershell 설치하기</string>
+      <string>Powershell 설치/업데이트</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btn_installPython">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>140</y>
+       <width>181</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Python LTS 설치/업데이트</string>
      </property>
     </widget>
    </widget>
